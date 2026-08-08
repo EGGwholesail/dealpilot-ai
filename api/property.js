@@ -1,11 +1,14 @@
 export default async function handler(req, res) {
-  const key = process.env.RENTCAST_API_KEY;
+  const rawKey = process.env.RENTCAST_API_KEY;
 
-  if (!key) {
+  if (!rawKey) {
     return res.status(500).json({
       error: "RENTCAST_API_KEY is not configured in Vercel."
     });
   }
+
+  // Removes accidental spaces/newlines from copied API keys
+  const key = String(rawKey).trim();
 
   const address = String(req.query.address || "").trim();
 
@@ -23,32 +26,40 @@ export default async function handler(req, res) {
   try {
     const q = encodeURIComponent(address);
 
-    const [propertyResponse, valuationResponse] = await Promise.all([
-      fetch(
-        `https://api.rentcast.io/v1/properties?address=${q}&limit=1`,
-        { headers }
-      ),
+    const propertyResponse = await fetch(
+      `https://api.rentcast.io/v1/properties?address=${q}&limit=1`,
+      { headers }
+    );
 
-      fetch(
-        `https://api.rentcast.io/v1/avm/value?address=${q}&compCount=5&lookupSubjectAttributes=true`,
-        { headers }
-      )
-    ]);
+    if (!propertyResponse.ok) {
+      const message = await propertyResponse.text();
 
-    if (!propertyResponse.ok || !valuationResponse.ok) {
-      const propertyError = await propertyResponse.text();
-      const valuationError = await valuationResponse.text();
+      return res.status(propertyResponse.status).json({
+        error:
+          `RentCast property lookup failed (${propertyResponse.status}): ` +
+          message.slice(0, 250),
+        debug: {
+          keyLoaded: true,
+          keyLength: key.length
+        }
+      });
+    }
 
-      return res.status(
-        propertyResponse.status === 401 ||
-        valuationResponse.status === 401
-          ? 401
-          : 502
-      ).json({
-        error: "RentCast request failed.",
-        details: {
-          property: propertyError.slice(0, 300),
-          valuation: valuationError.slice(0, 300)
+    const valuationResponse = await fetch(
+      `https://api.rentcast.io/v1/avm/value?address=${q}&compCount=5&lookupSubjectAttributes=true`,
+      { headers }
+    );
+
+    if (!valuationResponse.ok) {
+      const message = await valuationResponse.text();
+
+      return res.status(valuationResponse.status).json({
+        error:
+          `RentCast valuation failed (${valuationResponse.status}): ` +
+          message.slice(0, 250),
+        debug: {
+          keyLoaded: true,
+          keyLength: key.length
         }
       });
     }
