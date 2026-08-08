@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DealPilot AI — Wholesale Real Estate</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#18223a;--text:#eef3ff;--muted:#9ba8c2;--line:#26324d;--accent:#62e6a8;--accent2:#6ea8ff;--danger:#ff6b7a;--warn:#ffd166}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(135deg,#080d19,#0d1426 55%,#101a2e);color:var(--text)}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+.app{display:flex;min-height:100vh}.side{width:250px;background:#0a0f1c;border-right:1px solid var(--line);padding:22px 16px;position:sticky;top:0;height:100vh}
+.logo{font-size:21px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}.logo span{color:var(--accent)}.tag{font-size:12px;color:var(--muted);margin-bottom:26px}
+.nav button{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--muted);padding:12px 13px;border-radius:10px;margin:4px 0}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--text)}
+.sidefoot{position:absolute;bottom:18px;font-size:11px;color:#66738d;line-height:1.5}
+.main{flex:1;min-width:0}.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(9,14,26,.75);backdrop-filter:blur(12px);position:sticky;top:0;z-index:3}
+.top small{color:var(--muted)} .badge{background:#16392b;color:var(--accent);padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.content{padding:28px;max-width:1450px;margin:auto}.view{display:none}.view.active{display:block}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:-1px} h2{font-size:20px;margin:0 0 16px} p{color:var(--muted)}
+.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin:22px 0}.card{background:linear-gradient(180deg,rgba(24,34,58,.92),rgba(16,24,42,.95));border:1px solid var(--line);border-radius:15px;padding:18px;box-shadow:0 12px 35px rgba(0,0,0,.14)}
+.stat .label{color:var(--muted);font-size:12px}.stat .num{font-size:27px;font-weight:800;margin-top:7px}.green{color:var(--accent)}.blue{color:var(--accent2)}.yellow{color:var(--warn)}.red{color:var(--danger)}
+.two{grid-template-columns:1.5fr 1fr}.three{grid-template-columns:repeat(3,1fr)}
+.btn{border:1px solid var(--line);background:#18233b;color:var(--text);padding:10px 14px;border-radius:10px;font-weight:700}.btn:hover{filter:brightness(1.12)}.primary{background:var(--accent);color:#07130e;border-color:var(--accent)}.danger{border-color:#63313b;color:#ff9aa4}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{display:flex;justify-content:space-between;gap:15px;align-items:center}
+table{width:100%;border-collapse:collapse}th,td{padding:13px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{color:#8190ab;font-size:11px;text-transform:uppercase;letter-spacing:.06em}td{color:#dce4f6}
+input,select,textarea{width:100%;background:#0c1425;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:11px;outline:none}input:focus,select:focus,textarea:focus{border-color:#4f73b5}label{display:block;color:#9eabc4;font-size:12px;margin:0 0 6px}.field{margin-bottom:13px}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.formgrid .full{grid-column:1/-1}
+.score{display:inline-flex;min-width:46px;justify-content:center;padding:5px 8px;border-radius:999px;font-weight:800;font-size:12px;background:#25324b}.score.hot{background:#183d2d;color:var(--accent)}.score.mid{background:#403817;color:var(--warn)}.score.cold{background:#3c2028;color:#ff9aa4}
+.hero{padding:25px;background:radial-gradient(circle at 85% 15%,rgba(98,230,168,.13),transparent 35%),linear-gradient(120deg,#15233c,#10192c);border:1px solid var(--line);border-radius:18px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.kpi div{background:#0c1425;border:1px solid var(--line);padding:12px;border-radius:10px}.kpi b{display:block;font-size:19px;margin-top:3px}.muted{color:var(--muted)}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed #33415e;border-radius:12px}
+.alert{padding:12px 14px;border-radius:10px;background:#142238;border:1px solid #2b4164;color:#b8c8e4;font-size:13px}
+.toast{position:fixed;right:20px;bottom:20px;background:#15223a;border:1px solid #38527e;padding:13px 16px;border-radius:10px;display:none;z-index:10}
+@media(max-width:900px){.side{width:70px;padding:15px 8px}.logo{font-size:0}.logo span{font-size:20px}.tag,.sidefoot{display:none}.nav button{font-size:0;text-align:center}.nav button::first-letter{font-size:18px}.stats,.two,.three{grid-template-columns:1fr 1fr}.content{padding:18px}.kpi{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.stats,.two,.three,.formgrid{grid-template-columns:1fr}.top{padding:0 15px}.content{padding:14px}h1{font-size:25px}table{min-width:650px}.tablewrap{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="logo">Deal<span>Pilot</span> AI</div><div class="tag">Wholesale acquisitions command center</div>
+  <nav class="nav">
+    <button class="active" data-view="dashboard">◉ Dashboard</button>
+    <button data-view="leads">⌂ Leads</button>
+    <button data-view="analyzer">▣ Deal Analyzer</button>
+    <button data-view="followups">↻ Follow-ups</button>
+    <button data-view="buyers">♙ Buyers</button>
+    <button data-view="settings">⚙ Settings</button>
+  </nav>
+  <div class="sidefoot">Local-first MVP<br>Data stays in this browser.</div>
+</aside>
+<main class="main">
+<header class="top"><div><strong id="pageTitle">Dashboard</strong><br><small id="pageSub">Your acquisition pipeline at a glance</small></div><div class="row"><span class="badge">● SYSTEM READY</span><button class="btn primary" onclick="openAddLead()">+ New Lead</button></div></header>
+<div class="content">
+
+<section id="dashboard" class="view active">
+  <div class="hero">
+    <div class="between"><div><h1>Find the deal. Kill the busywork.</h1><p>DealPilot scores leads, analyzes numbers, creates seller messaging, and keeps your pipeline organized.</p></div><button class="btn primary" onclick="openAddLead()">Add property</button></div>
+    <div class="kpi"><div>Hot Leads<b id="hotKpi" class="green">0</b></div><div>Pipeline Value<b id="pipeKpi">$0</b></div><div>Potential Fees<b id="feeKpi" class="green">$0</b></div><div>Follow-ups Due<b id="dueKpi" class="yellow">0</b></div></div>
+  </div>
+  <div class="grid two" style="margin-top:18px">
+    <div class="card"><div class="between"><h2>Priority leads</h2><button class="btn" onclick="showView('leads')">View all</button></div><div id="priorityLeads"></div></div>
+    <div class="card"><h2>AI playbook</h2><div class="alert">1. Add a property.<br>2. Run the deal analyzer.<br>3. Review seller motivation and estimated MAO.<br>4. Use the generated outreach.<br>5. You make the final offer and handle the contract.</div><p style="font-size:12px;margin-top:12px">This app does not automatically make legally binding offers or sign contracts.</p></div>
+  </div>
+</section>
+
+<section id="leads" class="view">
+  <div class="between"><div><h1>Leads</h1><p>Every property, seller, score and next action in one place.</p></div><button class="btn primary" onclick="openAddLead()">+ New Lead</button></div>
+  <div class="card" style="margin-top:18px"><div class="row"><input id="leadSearch" placeholder="Search address or seller..." oninput="renderLeads()" style="max-width:320px"><select id="leadFilter" onchange="renderLeads()" style="max-width:180px"><option value="all">All statuses</option><option value="Hot">Hot</option><option value="Warm">Warm</option><option value="Cold">Cold</option></select></div><div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Property</th><th>Seller</th><th>Score</th><th>Ask</th><th>MAO</th><th>Spread</th><th>Status</th><th></th></tr></thead><tbody id="leadsTable"></tbody></table></div></div>
+</section>
+
+<section id="analyzer" class="view">
+  <div><h1>Deal Analyzer</h1><p>Estimate a conservative wholesale offer. Adjust the assumptions for your market and strategy.</p></div>
+  <div class="grid two" style="margin-top:18px">
+    <div class="card">
+      <h2>Property numbers</h2>
+      <div class="formgrid">
+        <div class="field"><label>ARV / After Repair Value</label><input id="a_arv" type="number" value="250000"></div>
+        <div class="field"><label>Estimated repairs</label><input id="a_repairs" type="number" value="40000"></div>
+        <div class="field"><label>Desired wholesale fee</label><input id="a_fee" type="number" value="15000"></div>
+        <div class="field"><label>Holding / closing / misc.</label><input id="a_holding" type="number" value="10000"></div>
+        <div class="field"><label>Investor margin %</label><input id="a_margin" type="number" value="15"></div>
+        <div class="field"><label>Seller asking price</label><input id="a_ask" type="number" value="100000"></div>
+      </div>
+      <button class="btn primary" onclick="analyze()">Run AI-style analysis</button>
+    </div>
+    <div class="card">
+      <h2>Offer snapshot</h2><div id="analysisResult" class="empty">Enter your numbers and run the analysis.</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h2>Seller conversation generator</h2><div class="formgrid">
+    <div class="field"><label>Seller situation / motivation</label><textarea id="s_motivation" rows="4" placeholder="Example: inherited property, vacant, wants to sell in 30 days..."></textarea></div>
+    <div class="field"><label>Property condition</label><textarea id="s_condition" rows="4" placeholder="Example: roof older, kitchen needs updating, HVAC works..."></textarea></div>
+  </div><button class="btn" onclick="generateScripts()">Generate outreach</button><div id="scriptResult" style="margin-top:14px"></div></div>
+</section>
+
+<section id="followups" class="view">
+  <div class="between"><div><h1>Follow-ups</h1><p>Don't let a promising seller disappear.</p></div></div>
+  <div class="card" style="margin-top:18px"><div id="followupList"></div></div>
+</section>
+
+<section id="buyers" class="view">
+  <div class="between"><div><h1>Cash Buyers</h1><p>Keep your disposition list organized.</p></div><button class="btn primary" onclick="addBuyer()">+ Add Buyer</button></div>
+  <div class="card" style="margin-top:18px"><div class="tablewrap"><table><thead><tr><th>Name</th><th>Market</th><th>Buy Box</th><th>Contact</th><th></th></tr></thead><tbody id="buyersTable"></tbody></table></div></div>
+</section>
+
+<section id="settings" class="view">
+  <h1>Settings</h1><p>Customize your acquisition assumptions.</p>
+  <div class="card" style="max-width:650px;margin-top:18px"><div class="formgrid">
+    <div class="field"><label>Default investor margin %</label><input id="set_margin" type="number"></div>
+    <div class="field"><label>Default wholesale fee</label><input id="set_fee" type="number"></div>
+    <div class="field full"><label>AI endpoint (optional)</label><input id="set_endpoint" placeholder="Leave blank for built-in local assistant"></div>
+  </div><button class="btn primary" onclick="saveSettings()">Save settings</button><p style="font-size:12px">For production AI, connect a secure server-side API. Never paste a private API key into this browser app.</p></div>
+</section>
+
+</div></main></div>
+<div id="toast" class="toast"></div>
+
+<!-- Modal -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9;padding:20px;overflow:auto">
+<div class="card" style="max-width:760px;margin:5vh auto">
+<div class="between"><h2 id="modalTitle">New Lead</h2><button class="btn" onclick="closeModal()">✕</button></div>
+<div class="formgrid">
+<div class="field"><label>Property address</label><input id="l_address"></div>
+<div class="field"><label>Seller name</label><input id="l_seller"></div>
+<div class="field"><label>Phone / email</label><input id="l_contact"></div>
+<div class="field"><label>Asking price</label><input id="l_ask" type="number"></div>
+<div class="field"><label>ARV</label><input id="l_arv" type="number"></div>
+<div class="field"><label>Repairs</label><input id="l_repairs" type="number"></div>
+<div class="field"><label>Motivation (1–10)</label><input id="l_motivation" type="number" min="1" max="10" value="5"></div>
+<div class="field"><label>Equity confidence (1–10)</label><input id="l_equity" type="number" min="1" max="10" value="5"></div>
+<div class="field full"><label>Notes</label><textarea id="l_notes" rows="4"></textarea></div>
+</div>
+<div class="row" style="justify-content:flex-end"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveLead()">Save lead</button></div>
+</div></div>
+
+<script>
+const KEY='dealpilot_data_v1';
+let data=JSON.parse(localStorage.getItem(KEY)||'null')||{leads:[],buyers:[],settings:{margin:15,fee:15000,endpoint:''}};
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function money(n){return '$'+Math.round(Number(n)||0).toLocaleString()}
+function toast(s){const t=document.getElementById('toast');t.textContent=s;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function scoreLead(l){
+ const mot=Number(l.motivation)||5, eq=Number(l.equity)||5;
+ const spread=Math.max(0,(Number(l.arv)||0)*.7-(Number(l.repairs)||0)-(Number(l.ask)||0));
+ let s=Math.round(mot*5+eq*4+Math.min(20,Math.max(0,spread/5000)));
+ return Math.max(1,Math.min(100,s));
+}
+function status(s){return s>=80?'Hot':s>=55?'Warm':'Cold'}
+function mao(arv,repairs){return Math.max(0,Number(arv||0)*(1-Number(data.settings.margin||15)/100)-Number(repairs||0)-Number(data.settings.fee||15000))}
+function showView(id){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===id));
+ const names={dashboard:['Dashboard','Your acquisition pipeline at a glance'],leads:['Leads','Properties and seller opportunities'],analyzer:['Deal Analyzer','Estimate offers and generate seller messaging'],followups:['Follow-ups','Your next conversations'],buyers:['Cash Buyers','Disposition contacts'],settings:['Settings','Assumptions and integrations']};
+ document.getElementById('pageTitle').textContent=names[id][0];document.getElementById('pageSub').textContent=names[id][1];
+ if(id==='leads')renderLeads();if(id==='followups')renderFollowups();if(id==='buyers')renderBuyers();
+}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function openAddLead(){document.getElementById('modal').style.display='block';['l_address','l_seller','l_contact','l_ask','l_arv','l_repairs','l_notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('l_motivation').value=5;document.getElementById('l_equity').value=5}
+function closeModal(){document.getElementById('modal').style.display='none'}
+function saveLead(){
+ const l={id:Date.now(),address:l_address.value.trim()||'Unnamed property',seller:l_seller.value.trim()||'Unknown seller',contact:l_contact.value.trim(),ask:+l_ask.value||0,arv:+l_arv.value||0,repairs:+l_repairs.value||0,motivation:+l_motivation.value||5,equity:+l_equity.value||5,notes:l_notes.value.trim(),next:new Date(Date.now()+86400000).toISOString().slice(0,10)};
+ data.leads.unshift(l);save();closeModal();toast('Lead added');showView('leads')
+}
+function renderLeads(){
+ const q=(document.getElementById('leadSearch')?.value||'').toLowerCase(), f=document.getElementById('leadFilter')?.value||'all';
+ const rows=data.leads.filter(l=>(l.address+' '+l.seller).toLowerCase().includes(q)).filter(l=>f==='all'||status(scoreLead(l))===f);
+ document.getElementById('leadsTable').innerHTML=rows.length?rows.map(l=>{let s=scoreLead(l),m=mao(l.arv,l.repairs),sp=m-l.ask;return `<tr><td><b>${esc(l.address)}</b><br><span class="muted">${esc(l.notes||'')}</span></td><td>${esc(l.seller)}</td><td><span class="score ${s>=80?'hot':s>=55?'mid':'cold'}">${s}</span></td><td>${money(l.ask)}</td><td>${money(m)}</td><td class="${sp>0?'green':'red'}">${money(sp)}</td><td>${status(s)}</td><td><button class="btn" onclick="useLead(${l.id})">Open</button></td></tr>`}).join(''):'<tr><td colspan="8"><div class="empty">No leads yet. Add your first property.</div></td></tr>';
+}
+function useLead(id){const l=data.leads.find(x=>x.id===id);if(!l)return;showView('analyzer');a_arv.value=l.arv||250000;a_repairs.value=l.repairs||0;a_ask.value=l.ask||0;toast('Loaded '+l.address);analyze()}
+function renderDashboard(){
+ const hot=data.leads.filter(l=>scoreLead(l)>=80);hotKpi.textContent=hot.length;pipeKpi.textContent=money(data.leads.reduce((a,l)=>a+(l.ask||0),0));feeKpi.textContent=money(hot.reduce((a,l)=>a+Math.max(0,mao(l.arv,l.repairs)-l.ask),0));dueKpi.textContent=data.leads.filter(l=>l.next&&l.next<=new Date().toISOString().slice(0,10)).length;
+ priorityLeads.innerHTML=hot.slice(0,5).map(l=>`<div class="between" style="padding:11px 0;border-bottom:1px solid var(--line)"><div><b>${esc(l.address)}</b><br><small class="muted">${esc(l.seller)} · ${money(l.ask)}</small></div><span class="score hot">${scoreLead(l)}</span></div>`).join('')||'<div class="empty">Add leads to see your highest-priority opportunities.</div>';
+}
+function renderFollowups(){
+ const due=data.leads.filter(l=>l.next).sort((a,b)=>a.next.localeCompare(b.next));
+ followupList.innerHTML=due.length?due.map(l=>`<div class="between" style="padding:14px 0;border-bottom:1px solid var(--line)"><div><b>${esc(l.seller)}</b> — ${esc(l.address)}<br><small class="muted">${l.next} · ${esc(l.contact||'No contact')}</small></div><div class="row"><button class="btn" onclick="copyText('${escapeAttr(scriptFor(l))}')">Copy script</button><button class="btn" onclick="markFollowed(${l.id})">Followed up</button></div></div>`).join(''):'<div class="empty">No follow-ups yet.</div>';
+}
+function scriptFor(l){return `Hi ${l.seller}, this is Jackson. I’m reaching out about ${l.address}. I’m looking at buying a few properties in the area. Would you be open to a quick conversation about selling it?`}
+function markFollowed(id){let l=data.leads.find(x=>x.id===id);if(l){l.next=new Date(Date.now()+3*86400000).toISOString().slice(0,10);save();toast('Follow-up moved 3 days');}}
+function addBuyer(){let name=prompt('Buyer name');if(!name)return;let market=prompt('Market / area')||'';let box=prompt('Buy box (price, property type, etc.)')||'';let contact=prompt('Phone/email')||'';data.buyers.push({name,market,box,contact});save();toast('Buyer added')}
+function renderBuyers(){buyersTable.innerHTML=data.buyers.length?data.buyers.map((b,i)=>`<tr><td>${esc(b.name)}</td><td>${esc(b.market)}</td><td>${esc(b.box)}</td><td>${esc(b.contact)}</td><td><button class="btn danger" onclick="data.buyers.splice(${i},1);save()">Delete</button></td></tr>`).join(''):'<tr><td colspan="5"><div class="empty">No buyers yet.</div></td></tr>'}
+function analyze(){
+ const arv=+a_arv.value||0, repairs=+a_repairs.value||0, fee=+a_fee.value||0, hold=+a_holding.value||0, margin=+a_margin.value||15, ask=+a_ask.value||0;
+ const investorPrice=arv*(1-margin/100), offer=Math.max(0,investorPrice-repairs-hold-fee), spread=offer-ask;
+ let verdict=spread>=15000?'STRONG':spread>=0?'POSSIBLE':'PASS';
+ analysisResult.innerHTML=`<div class="kpi" style="margin:0"><div>Estimated MAO<b class="green">${money(offer)}</b></div><div>Seller Ask<b>${money(ask)}</b></div><div>Room to Negotiate<b class="${spread>=0?'green':'red'}">${money(spread)}</b></div><div>Verdict<b class="${verdict==='STRONG'?'green':verdict==='POSSIBLE'?'yellow':'red'}">${verdict}</b></div></div><p style="margin-top:16px">Formula used: ARV × (1 − investor margin) − repairs − holding/closing − desired wholesale fee. This is a screening estimate, not an appraisal or guaranteed offer.</p>`;
+}
+function generateScripts(){
+ const mot=s_motivation.value||'you’re considering selling';const cond=s_condition.value||'the current condition of the property';
+ scriptResult.innerHTML=`<div class="card" style="background:#0c1425"><b>Initial text</b><p style="color:#dbe5f8">Hi! I’m Jackson. I’m looking at ${cond} and heard ${mot}. Would you be open to a quick conversation about what you’d want to do with the property?</p><b>Discovery questions</b><ol class="muted"><li>What has you considering selling?</li><li>What kind of timeline are you working with?</li><li>What work does the property need?</li><li>What price would make sense for you?</li><li>Is anyone else involved in the decision?</li></ol><b>Follow-up</b><p style="color:#dbe5f8">Thanks for the details. I’m going to run the numbers and see if I can make something work. I’ll get back to you after I review it.</p></div>`;
+}
+function saveSettings(){data.settings.margin=+set_margin.value||15;data.settings.fee=+set_fee.value||15000;data.settings.endpoint=set_endpoint.value.trim();save();toast('Settings saved')}
+function copyText(s){navigator.clipboard?.writeText(s);toast('Copied')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function escapeAttr(s){return String(s).replace(/'/g,"\\'")}
+function renderAll(){renderDashboard();renderLeads();renderFollowups();renderBuyers();set_margin.value=data.settings.margin;set_fee.value=data.settings.fee;set_endpoint.value=data.settings.endpoint||''}
+renderAll();
+</script>
+</body></html>
